@@ -1,7 +1,7 @@
 name: flutter_alipay
 description: A flutter plugin to use alipay.
 version: 0.1.0
-author: jzoom8112@gmail.com
+author: JZoom <jzoom8112@gmail.com>
 homepage: https://github.com/jzoom/flutter_alipay
 
 environment:
