@@ -22,7 +22,10 @@ class _MyAppState extends State<MyApp> {
   initState() {
     super.initState();
 
-    http.post("http://192.168.1.106:8091/api/test_pay/create", body: "{}")
+    http.post("http://120.79.190.42:8071/pay/test_pay/create", body: json.encode({
+      "fee":1,
+      "title":"test pay"
+    }))
         .then((http.Response response) {
       if(response.statusCode == 200){
         print(response.body);
