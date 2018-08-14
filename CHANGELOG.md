@@ -1,3 +1,4 @@
-## [0.0.1] - TODO: Add release date.
+## [0.1.1] 
+ * 使用强类型保存支付结果
+ 
 
-* TODO: Describe initial release.

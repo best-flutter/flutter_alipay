@@ -1,7 +1,8 @@
 # flutter_alipay
-
-
 A flutter plugin to use alipay.
+
+
+有任何问题，欢迎加入qq群854192563交流
 
 
 ## Features
