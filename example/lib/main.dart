@@ -13,25 +13,23 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _payInfo = "";
-  dynamic _payResult;
+  AlipayResult _payResult;
 
   final myController = new TextEditingController();
 
+  void _loadData(){
+    _payInfo = "";
+    _payResult = null;
 
-  @override
-  initState() {
-    super.initState();
-
-    http.post("http://120.79.190.42:8071/pay/test_pay/create", body: json.encode({
-      "fee":1,
-      "title":"test pay"
-    }))
+    http
+        .post("http://120.79.190.42:8071/pay/test_pay/create",
+        body: json.encode({"fee": 1, "title": "test pay"}))
         .then((http.Response response) {
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         print(response.body);
-        var map = json.decode( response.body);
+        var map = json.decode(response.body);
         int flag = map["flag"];
-        if(flag==0){
+        if (flag == 0) {
           var result = map["result"];
           setState(() {
             _payInfo = result["credential"]["payInfo"];
@@ -39,37 +37,41 @@ class _MyAppState extends State<MyApp> {
           });
           return;
         }
-
       }
       throw new Exception("创建订单失败");
-    }).catchError((e){
-        setState(() {
+    }).catchError((e) {
+      setState(() {
+        _payInfo = e.toString();
+        myController.text = _payInfo;
+      });
+    });
 
-          _payInfo = e.toString();
-          myController.text = _payInfo;
-        });
+    setState(() {
+
     });
   }
 
+  @override
+  initState() {
+    super.initState();
 
-  onChanged(String value){
-    _payInfo = value;
+    _loadData();
   }
 
+  onChanged(String value) {
+    _payInfo = value;
+  }
 
   callAlipay() async {
     dynamic payResult;
     try {
-      print("The pay info is : " +_payInfo);
+      print("The pay info is : " + _payInfo);
       payResult = await FlutterAlipay.pay(_payInfo);
-    } on Exception catch (e)  {
-
+    } on Exception catch (e) {
       payResult = null;
-
     }
 
-    if (!mounted)
-      return;
+    if (!mounted) return;
 
     setState(() {
       _payResult = payResult;
@@ -83,13 +85,22 @@ class _MyAppState extends State<MyApp> {
         appBar: new AppBar(
           title: new Text('Alipay example'),
         ),
-        body: new Column(
-          children: <Widget>[
-            new Text("输入调用字符串"),
-            new TextField(maxLines: 15, onChanged: onChanged, controller: myController),
-            new RaisedButton(onPressed: callAlipay, child: new Text("调用支付宝") ),
-            new Text( _payResult == null ? "" : _payResult.toString()  )
-          ],
+        body: new SingleChildScrollView(
+          child: new Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              new Text("输入调用字符串"),
+              new TextField(
+                  maxLines: 15, onChanged: onChanged, controller: myController),
+              new RaisedButton(onPressed: callAlipay, child: new Text("调用支付宝")),
+              new RaisedButton(onPressed: (){
+
+                _loadData();
+
+              }, child: new Text("重新下单")),
+              new Text(_payResult == null ? "" : _payResult.toString())
+            ],
+          ),
         ),
       ),
     );
