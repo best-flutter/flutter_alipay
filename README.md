@@ -82,3 +82,23 @@ import 'package:flutter_alipay/flutter_alipay.dart';
 ```
 var result = await FlutterAlipay.pay("you pay info from server");
 ```
+
+## Using flutter_alipay in Swift
+
+Edit `Runner-Bridging-Header.h`,add
+
+```
+#import <flutter_alipay/FlutterAlipayPlugin.h>
+
+```
+
+Edit `AppDelegate.swift`,add
+
+```
+
+ override func application(_ application: UIApplication, handleOpen url: URL) -> Bool {
+        return FlutterAlipayPlugin.handleOpen(url);
+    }
+```
+
+
