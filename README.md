@@ -18,48 +18,54 @@ dependencies:
 
 ## Getting Started
 
-* Android
+### Android
 
- * Add following permissions to your AndroidManifest.xml
+ Add following permissions to your AndroidManifest.xml
+ 
  ```
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
  ```
+ ### ios
 
-* ios
+Step 1: Add a URL scheme in info.plist
 
- * Add a URL scheme in info.plist
-
-```
+```plist
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
             <key>CFBundleURLName</key>
             <string>alipay</string>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
             <key>CFBundleURLSchemes</key>
             <array>
-                <string>YOUR APP SCHEME NAME</string>
+                <string>alipay</string>
+            </array>
+            </dict>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>your app's scheme</string>
             </array>
         </dict>
     </array>
 ```
 
- Make sure you have a CFBundleURLName=alipay in CFBundleURLTypes.
-
-
- * In AppDelegate.m, do header import
+Step 2: In AppDelegate.m, do header import
 
  ```
  #import "FlutterAlipayPlugin.h"
  ```
 
- and add following code
+and add following code 
 
 ```
      // ios 8.x or older
@@ -74,7 +80,10 @@ dependencies:
 
  ```
 
- ## How to use
+## How to use
+
+### In Dart
+
 ```
 import 'package:flutter_alipay/flutter_alipay.dart';
 ```
@@ -83,7 +92,7 @@ import 'package:flutter_alipay/flutter_alipay.dart';
 var result = await FlutterAlipay.pay("you pay info from server");
 ```
 
-## Using flutter_alipay in Swift
+### Using flutter_alipay in Swift
 
 Edit `Runner-Bridging-Header.h`,add
 

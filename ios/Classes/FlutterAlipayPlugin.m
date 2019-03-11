@@ -15,9 +15,7 @@ __weak FlutterAlipayPlugin* __FlutterAlipayPlugin;
 
 -(id)init{
     if(self = [super init]){
-        
         __FlutterAlipayPlugin  = self;
-        
     }
     return self;
 }
@@ -25,8 +23,6 @@ __weak FlutterAlipayPlugin* __FlutterAlipayPlugin;
 -(void)dealloc{
     
 }
-
-
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
@@ -36,30 +32,27 @@ __weak FlutterAlipayPlugin* __FlutterAlipayPlugin;
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-
 //
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-    
     NSDictionary *arguments = [call arguments];
-    
     if ([@"pay" isEqualToString:call.method]) {
         NSString* urlScheme = [self fetchUrlScheme];
         if(!urlScheme){
             NSLog(@"alipay cannot be found in info.plist,please visit https://github.com/jzoom/flutter_alipay.");
           return;
         }
-      self.callback = result;
-      [self pay:arguments[@"payInfo"] urlScheme:urlScheme];
-  } else {
-    result(FlutterMethodNotImplemented);
-  }
+        self.callback = result;
+        [self pay:arguments[@"payInfo"] urlScheme:urlScheme];
+    } else {
+        result(FlutterMethodNotImplemented);
+    }
 }
 
 -(NSString*)fetchUrlScheme{
     NSDictionary *infoDic = [[NSBundle mainBundle] infoDictionary];
-    NSArray* types = [infoDic objectForKey:@"CFBundleURLTypes"];
-    for(NSDictionary* dic in types){
-        if([@"alipay" isEqualToString: [dic objectForKey:@"CFBundleURLName"]]){
+    NSArray *types = [infoDic objectForKey:@"CFBundleURLTypes"];
+    NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];    for(NSDictionary* dic in types){
+        if([bundleId isEqualToString: [dic objectForKey:@"CFBundleURLName"]]){
             return [dic objectForKey:@"CFBundleURLSchemes"][0];
         }
     }
@@ -95,9 +88,6 @@ __weak FlutterAlipayPlugin* __FlutterAlipayPlugin;
      }];
 }
 
-
-
-
 -(void)onGetResult:(NSDictionary*)resultDic{
     if(self.callback!=nil){
          self.callback(resultDic);
@@ -105,6 +95,5 @@ __weak FlutterAlipayPlugin* __FlutterAlipayPlugin;
     }
    
 }
-
 
 @end
