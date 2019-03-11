@@ -29,7 +29,7 @@ dependencies:
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
  ```
- ### ios
+ ### iOS
 
 Step 1: Add a URL scheme in info.plist
 
