@@ -13,6 +13,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  http: ^0.12.0+2
+
   flutter_alipay:
     path: ../
 
