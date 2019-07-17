@@ -37,11 +37,11 @@ class AlipayResult{
 class FlutterAlipay {
   static const MethodChannel _channel = const MethodChannel('flutter_alipay');
 
-  static Future<AlipayResult> pay(String payInfo) async {
+  static Future<Map> pay(String payInfo) async {
     final Map<String, dynamic> params = <String, dynamic>{
       'payInfo': payInfo,
     };
     var res = await _channel.invokeMethod('pay', params);
-    return new AlipayResult(result: res['result'],resultStatus: res['resultStatus'],memo: res['mono']);
+    return Map.from(res);
   }
 }
