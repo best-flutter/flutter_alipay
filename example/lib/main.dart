@@ -89,7 +89,7 @@ class _MyAppState extends State<MyApp> {
           child: new Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              new Text("输入调用字符串"),
+              new Text("输入调用字符串,如何生成请查阅支付宝官方文档:https://docs.open.alipay.com/"),
               new TextField(
                   maxLines: 15, onChanged: onChanged, controller: myController),
               new RaisedButton(onPressed: callAlipay, child: new Text("调用支付宝")),
