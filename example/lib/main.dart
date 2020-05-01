@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_alipay/flutter_alipay.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:easy_alert/easy_alert.dart';
+
+
 
 void main() => runApp(new MyApp());
 
@@ -12,6 +15,23 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      home: new AlertProvider(child: new Main()),
+    );
+  }
+}
+
+
+
+class Main extends StatefulWidget {
+  @override
+  _MainState createState() => _MainState();
+}
+
+class _MainState extends State<Main> {
   String _payInfo = "";
   AlipayResult _payResult;
 
@@ -22,23 +42,19 @@ class _MyAppState extends State<MyApp> {
     _payResult = null;
 
     http
-        .post("http://120.79.190.42:8071/pay/test_pay/create",
-        body: json.encode({"fee": 1, "title": "test pay"}))
+        .post("http://192.168.1.104:8095/api/pay/prePay",
+        body: json.encode({}))
         .then((http.Response response) {
       if (response.statusCode == 200) {
         print(response.body);
         var map = json.decode(response.body);
-        int flag = map["flag"];
-        if (flag == 0) {
-          var result = map["result"];
-          setState(() {
-            _payInfo = result["credential"]["payInfo"];
-            myController.text = _payInfo;
-          });
-          return;
-        }
+        setState(() {
+          _payInfo = map;
+          myController.text = _payInfo;
+        });
+        return;
       }
-      throw new Exception("创建订单失败");
+      throw new Exception("拉取订单支付信息失败");
     }).catchError((e) {
       setState(() {
         _payInfo = e.toString();
@@ -78,29 +94,37 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Alipay example'),
-        ),
-        body: new SingleChildScrollView(
-          child: new Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              new Text("输入调用字符串,如何生成请查阅支付宝官方文档:https://docs.open.alipay.com/"),
-              new TextField(
-                  maxLines: 15, onChanged: onChanged, controller: myController),
-              new RaisedButton(onPressed: callAlipay, child: new Text("调用支付宝")),
-              new RaisedButton(onPressed: (){
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Alipay example'),
+      ),
+      body: new SingleChildScrollView(
+        child: new Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+//            new RaisedButton(child:new Text('检查是否安装'),onPressed: () async{
+//
+//              if(await FlutterAlipay.isInstalled()){
+//                Alert.alert(context,title: "已经安装");
+//              }else{
+//                Alert.alert(context,title: "没有安装");
+//              }
+//
+//            }),
+            new Text("输入调用字符串,如何生成请查阅支付宝官方文档:https://docs.open.alipay.com/"),
+            new TextField(
+                maxLines: 15, onChanged: onChanged, controller: myController),
+            new RaisedButton(onPressed: callAlipay, child: new Text("调用支付宝")),
+            new RaisedButton(onPressed: (){
 
-                _loadData();
+              _loadData();
 
-              }, child: new Text("重新下单")),
-              new Text(_payResult == null ? "" : _payResult.toString())
-            ],
-          ),
+            }, child: new Text("重新下单")),
+            new Text(_payResult == null ? "" : _payResult.toString())
+          ],
         ),
       ),
     );

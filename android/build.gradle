@@ -1,5 +1,5 @@
-group 'com.jzoom.flutteralipay'
-version '1.0-SNAPSHOT'
+group 'com.example.flutter_alipay'
+version '1.0'
 
 buildscript {
     repositories {
@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.5.0'
     }
 }
 
@@ -22,18 +22,22 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 16
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
         disable 'InvalidPackage'
     }
-}
 
 
-dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+
+    dependencies {
+        // 支付宝 SDK AAR 包所需的配置
+        implementation fileTree(include: ['*.aar'], dir: 'libs')
+    }
+
+
 }

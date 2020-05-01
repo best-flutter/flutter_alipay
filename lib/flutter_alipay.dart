@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 
@@ -25,11 +26,11 @@ class AlipayResult{
     this.memo,
     this.result,
     this.resultStatus
-});
+  });
 
   @override
   String toString() {
-    return "{mono: $memo, resultStatus:$resultStatus, result:$result}";
+    return "{meno: $memo, resultStatus:$resultStatus, result:$result}";
   }
 
 }
@@ -42,6 +43,18 @@ class FlutterAlipay {
       'payInfo': payInfo,
     };
     var res = await _channel.invokeMethod('pay', params);
-    return new AlipayResult(result: res['result'],resultStatus: res['resultStatus'],memo: res['mono']);
+    return new AlipayResult(result: res['result'],resultStatus: res['resultStatus'],memo: res['memo']);
+  }
+
+  /// 判断是否安装了支付宝
+  static Future<bool> isInstalled() async{
+    var res = await _channel.invokeMethod('isInstalled');
+    return res['result'];
+  }
+
+  static Future setIosUrlSchema(String urlSchema) async{
+    if(Platform.isIOS){
+      await _channel.invokeMethod('setIosUrlSchema',{"schema":urlSchema});
+    }
   }
 }

@@ -5,100 +5,76 @@ A flutter plugin to use alipay.
 有任何问题，欢迎加入qq群854192563交流
 
 
-## Features
+## 功能列表
+
+* 调用支付
 
 
-## Install
+## 安装
 
-Add this to your package's pubspec.yaml file:
+增加依赖 pubspec.yaml
 ```
 dependencies:
-  flutter_alipay: "^0.1.0"
+  flutter_alipay: "^1.0.0"
 ```
 
-## Getting Started
+## 开始
 
-* Android
+* ios集成
 
- * Add following permissions to your AndroidManifest.xml
- ```
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
- ```
 
-* ios
-
- * Add a URL scheme in info.plist
+  + 在info.plist增加一条URL scheme
 
 ```
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
-            <key>CFBundleURLName</key>
-            <string>alipay</string>
             <key>CFBundleTypeRole</key>
             <string>Editor</string>
             <key>CFBundleURLSchemes</key>
             <array>
-                <string>YOUR APP SCHEME NAME</string>
+                <string>org.zoomdev.flutter.alipay</string>
+            </array>
+        </dict>
+    </array>
+```
+  如果需要定制URL scheme可以这么做：
+
+  + 或者
+
+```
+ <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>__YOUR APP SCHEME NAME__</string>
             </array>
         </dict>
     </array>
 ```
 
- Make sure you have a CFBundleURLName=alipay in CFBundleURLTypes.
-
-
- * In AppDelegate.m, do header import
-
- ```
- #import "FlutterAlipayPlugin.h"
- ```
-
- and add following code
+然后在app中调用
 
 ```
-     // ios 8.x or older
--(BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url{
+await FlutterAlipay.setIosUrlSchema('YOUR APP SCHEME NAME');
+```
 
-    return [FlutterAlipayPlugin handleOpenURL:url];
-}
-// ios 9.0+
--(BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options{
-     return [FlutterAlipayPlugin handleOpenURL:url];
-}
 
- ```
 
- ## How to use
+ ## 使用
 ```
 import 'package:flutter_alipay/flutter_alipay.dart';
 ```
 
+
+* 调取支付
+
 ```
 var result = await FlutterAlipay.pay("you pay info from server");
-```
-
-## Using flutter_alipay in Swift
-
-Edit `Runner-Bridging-Header.h`,add
-
-```
-#import <flutter_alipay/FlutterAlipayPlugin.h>
-
-```
-
-Edit `AppDelegate.swift`,add
-
-```
-
- override func application(_ application: UIApplication, handleOpen url: URL) -> Bool {
-        return FlutterAlipayPlugin.handleOpen(url);
-    }
 ```
 
 

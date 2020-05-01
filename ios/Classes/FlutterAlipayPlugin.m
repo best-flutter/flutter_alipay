@@ -3,38 +3,30 @@
 #import <AlipaySDK/AlipaySDK.h>
 
 
-__weak FlutterAlipayPlugin* __FlutterAlipayPlugin;
 
 @interface FlutterAlipayPlugin()
 
 @property (readwrite,copy,nonatomic) FlutterResult callback;
 
+@property (nonatomic) NSString* urlScheme;
+
 @end
 
 @implementation FlutterAlipayPlugin
 
--(id)init{
-    if(self = [super init]){
-        
-        __FlutterAlipayPlugin  = self;
-        
-    }
-    return self;
-}
-
--(void)dealloc{
-    
-}
-
 
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"flutter_alipay"
-            binaryMessenger:[registrar messenger]];
-  FlutterAlipayPlugin* instance = [[FlutterAlipayPlugin alloc] init];
-  [registrar addMethodCallDelegate:instance channel:channel];
+    FlutterMethodChannel* channel = [FlutterMethodChannel
+                                     methodChannelWithName:@"flutter_alipay"
+                                     binaryMessenger:[registrar messenger]];
+    FlutterAlipayPlugin* instance = [[FlutterAlipayPlugin alloc] init];
+    [registrar addMethodCallDelegate:instance channel:channel];
+    [registrar addApplicationDelegate:instance];
 }
+
+
+
 
 
 //
@@ -43,41 +35,27 @@ __weak FlutterAlipayPlugin* __FlutterAlipayPlugin;
     NSDictionary *arguments = [call arguments];
     
     if ([@"pay" isEqualToString:call.method]) {
-        NSString* urlScheme = [self fetchUrlScheme];
-        if(!urlScheme){
-            NSLog(@"alipay cannot be found in info.plist,please visit https://github.com/jzoom/flutter_alipay.");
-          return;
-        }
-      self.callback = result;
-      [self pay:arguments[@"payInfo"] urlScheme:urlScheme];
-  } else {
-    result(FlutterMethodNotImplemented);
-  }
-}
-
--(NSString*)fetchUrlScheme{
-    NSDictionary *infoDic = [[NSBundle mainBundle] infoDictionary];
-    NSArray* types = [infoDic objectForKey:@"CFBundleURLTypes"];
-    for(NSDictionary* dic in types){
-        if([@"alipay" isEqualToString: [dic objectForKey:@"CFBundleURLName"]]){
-            return [dic objectForKey:@"CFBundleURLSchemes"][0];
-        }
+        self.callback = result;
+        [self pay:arguments[@"payInfo"] urlScheme:self.urlScheme ? self.urlScheme : @"org.zoomdev.flutter.alipay"];
+    }else  if ([@"isInstalled" isEqualToString:call.method]){
+        BOOL isInstalled = [UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:@"alipay:"]];
+        result(@{
+            @"result":@(isInstalled)
+        });
+    }else if([@"setIosUrlSchema" isEqualToString:call.method]){
+        self.urlScheme =  arguments[@"schema"];
+        result(@{});
+    } else {
+        result(FlutterMethodNotImplemented);
     }
-    return nil;
 }
 
-+(BOOL)handleOpenURL:(NSURL*)url{
-    if(!__FlutterAlipayPlugin)return NO;
-    return [__FlutterAlipayPlugin handleOpenURL:url];
-    
-}
+
 
 -(BOOL)handleOpenURL:(NSURL*)url{
-    
     if ([url.host isEqualToString:@"safepay"]) {
         // 支付跳转支付宝钱包进行支付，处理支付结果
         __weak FlutterAlipayPlugin* __self = self;
-        
         [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
             [__self onGetResult:resultDic];
         }];
@@ -89,10 +67,10 @@ __weak FlutterAlipayPlugin* __FlutterAlipayPlugin;
 
 -(void)pay:(NSString*)payInfo urlScheme:(NSString*)urlScheme{
     //获取到CFBundleURLSchemes
-     [[AlipaySDK defaultService] payOrder:payInfo fromScheme:urlScheme callback:^(NSDictionary *resultDic) {
-         //NSLog(@"%@",resultDic);
-         [self onGetResult:resultDic];
-     }];
+    [[AlipaySDK defaultService] payOrder:payInfo fromScheme:urlScheme callback:^(NSDictionary *resultDic) {
+        //NSLog(@"%@",resultDic);
+        [self onGetResult:resultDic];
+    }];
 }
 
 
@@ -100,10 +78,45 @@ __weak FlutterAlipayPlugin* __FlutterAlipayPlugin;
 
 -(void)onGetResult:(NSDictionary*)resultDic{
     if(self.callback!=nil){
-         self.callback(resultDic);
+        self.callback(resultDic);
         self.callback = nil;
     }
-   
+    
+}
+
+
+#pragma ApplicatioonLifeCycle
+
+/**
+ * Called if this has been registered for `UIApplicationDelegate` callbacks.
+ *
+ * @return `YES` if this handles the request.
+ */
+- (BOOL)application:(UIApplication*)application
+            openURL:(NSURL*)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id>*)options{
+    return [self handleOpenURL:url];
+}
+
+/**
+ * Called if this has been registered for `UIApplicationDelegate` callbacks.
+ *
+ * @return `YES` if this handles the request.
+ */
+- (BOOL)application:(UIApplication*)application handleOpenURL:(NSURL*)url{
+    return [self handleOpenURL:url];
+}
+
+/**
+ * Called if this has been registered for `UIApplicationDelegate` callbacks.
+ *
+ * @return `YES` if this handles the request.
+ */
+- (BOOL)application:(UIApplication*)application
+            openURL:(NSURL*)url
+  sourceApplication:(NSString*)sourceApplication
+         annotation:(id)annotation{
+    return [self handleOpenURL:url];
 }
 
 
