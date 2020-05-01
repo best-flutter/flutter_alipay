@@ -2,6 +2,9 @@
 A flutter plugin to use alipay.
 
 
+因为项目很久了，所以之前的项目都推倒重新来了。
+
+
 有任何问题，欢迎加入qq群854192563交流
 
 
